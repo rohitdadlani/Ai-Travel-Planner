@@ -20,6 +20,7 @@ TripForge is a premium AI-powered travel itinerary planner that crafts personali
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/)
 - **AI Core**: [Google Gemini 3.1 Flash Lite Preview](https://ai.google.dev/)
 - **AI Enhancement**: [HuggingFace Inference API](https://huggingface.co/docs/api-inference/index)
+- **Testing**: [Cypress v13+](https://www.cypress.io/)
 - **State Management**: React Hooks & Local Storage
 
 ---
@@ -38,6 +39,8 @@ The development of TripForge followed a meticulous, iterative process to ensure 
 5.  **Form & Validation**: Built a multi-step user preference form with real-time validation for destination, dates, and budget.
 6.  **API Orchestration**: Developed `/api/generate-itinerary` to handle the handshake between the frontend and Google’s servers, including post-processing of AI responses.
 7.  **Diagnostic & Debugging**: Performed extensive "live" troubleshooting to identify and fix 404 and 429 quota errors, ultimately identifying `gemini-3.1-flash-lite-preview` as the most compatible model for standard API keys.
+8.  **Testing Strategy**: Integrated Cypress for automated end-to-end testing to verify form flows, AI rendering, and data persistence.
+9.  **Type Refactoring**: Implemented a comprehensive TypeScript architecture with granular models for Activities, TimeBlocks, and Days.
 
 ---
 
@@ -80,6 +83,13 @@ npm install
 npm run dev
 ```
 Open [http://localhost:3000](http://localhost:3000) in your browser to see the app!
+
+### 6. Running Automated Tests
+To run the E2E smoke tests:
+```bash
+# In a separate terminal while the dev server is running
+npm run cypress:run
+```
 
 ---
 

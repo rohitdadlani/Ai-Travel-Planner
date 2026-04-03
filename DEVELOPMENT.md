@@ -15,6 +15,7 @@ TripForge is built on **Next.js 14** using the **App Router** for optimized rout
 -   `src/lib/`: Custom SDK handlers and library wrappers (Gemini, HuggingFace, Prompt templates).
 -   `src/types/`: Unified TypeScript definitions shared across the frontend and backend.
 -   `src/utils/`: General utility functions (date formatting, cost calculation).
+-   `cypress/`: End-to-end (E2E) testing suite with automated user flows.
 
 ---
 
@@ -49,22 +50,43 @@ The entire application state follows the `Itinerary` interface defined in `src/t
 
 ```typescript
 export interface Itinerary {
-  id: string;
-  destination: string;
-  title: string;
+  id: string; // Unique Trip ID
+  destination: string; 
+  title: string; 
   summary: string;
   startDate: string;
   endDate: string;
   totalDays: number;
-  budget: string;
+  budget: 'budget' | 'moderate' | 'luxury';
   currency: string;
-  days: DayPlan[];
+  days: Day[]; // Array of Day objects (Morning, Afternoon, Evening)
   packingList: string[];
   travelTips: string[];
   estimatedTotalCost: string;
   createdAt: string;
 }
 ```
+
+### 🆕 Advanced Architecture (v1.1)
+The data model has evolved to include more granular types:
+-   **Day**: Includes `dayNumber`, `theme`, and `TimeBlock[]`.
+-   **TimeBlock**: Orchestrates `Activity` objects into `Morning`, `Lunch`, `Afternoon`, `Dinner`, and `Evening`.
+-   **Activity**: Detailed objects including `location`, `estimatedCost`, and `category`.
+-   **Legacy Compat**: We maintain `LegacyActivity` and `DayPlan` aliases for backward compatibility with the v1.0 UI components.
+
+---
+
+---
+
+## 🧪 Testing & Quality Assurance
+
+TripForge uses **Cypress** for its end-to-end (E2E) testing strategy to ensure the "Happy Path" (user flows) always works.
+
+### Key Test: "Itinerary Full Cycle"
+Located in `cypress/e2e/itinerary.cy.ts`.
+-   **Automated Flow**: Robot fills the preference form → clicks Plan → waits for AI response → verifies UI rendering → saves to local storage → confirms persistence.
+-   **Case-Sensitivity**: Tests use regex patterns (e.g., `/Forging Your Trip/i`) to ensure UI text changes don't unnecessarily break the tests.
+-   **Timeouts**: High-latency AI generation is handled with extended timeouts (`30,000ms+`).
 
 ---
 
