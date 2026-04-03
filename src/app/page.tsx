@@ -52,8 +52,8 @@ export default function Home() {
     if (itinerary) {
       saveTrip(itinerary, {
         destination: itinerary.destination,
-        startDate: itinerary.startDate,
-        endDate: itinerary.endDate,
+        startDate: itinerary.startDate ?? '',
+        endDate: itinerary.endDate ?? '',
         budget: itinerary.budget as TripPreferences['budget'],
         interests: [],
         travelStyle: 'balanced',

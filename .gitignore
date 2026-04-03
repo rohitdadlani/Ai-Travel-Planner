@@ -39,3 +39,6 @@ models_list.txt
 src/debug-models.ts
 .next/
 *.log
+
+# Private Commit History
+COMMITS_HISTORY.doc

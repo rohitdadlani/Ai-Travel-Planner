@@ -111,6 +111,7 @@ export default function TripForm({ onSubmit, isLoading }: TripFormProps) {
             </label>
             <input
               id="destination-input"
+              data-testid="destination-input"
               type="text"
               className="input-field text-lg"
               placeholder="e.g., Tokyo, Japan"
@@ -126,6 +127,7 @@ export default function TripForm({ onSubmit, isLoading }: TripFormProps) {
               </label>
               <input
                 id="start-date-input"
+                data-testid="start-date-input"
                 type="date"
                 className="input-field"
                 value={preferences.startDate}
@@ -138,6 +140,7 @@ export default function TripForm({ onSubmit, isLoading }: TripFormProps) {
               </label>
               <input
                 id="end-date-input"
+                data-testid="end-date-input"
                 type="date"
                 className="input-field"
                 value={preferences.endDate}
@@ -208,6 +211,7 @@ export default function TripForm({ onSubmit, isLoading }: TripFormProps) {
             {INTEREST_OPTIONS.map((interest) => (
               <button
                 key={interest.value}
+                data-testid={`interest-${interest.value}`}
                 onClick={() => toggleInterest(interest.value)}
                 className={`chip ${
                   preferences.interests.includes(interest.value) ? 'chip-active' : ''
@@ -252,6 +256,7 @@ export default function TripForm({ onSubmit, isLoading }: TripFormProps) {
               ].map((option) => (
                 <button
                   key={option.value}
+                  data-testid={`budget-${option.value}`}
                   onClick={() => updateField('budget', option.value)}
                   className={`glass-subtle p-4 text-center transition-all duration-300 cursor-pointer ${
                     preferences.budget === option.value
@@ -326,6 +331,7 @@ export default function TripForm({ onSubmit, isLoading }: TripFormProps) {
         {step < totalSteps ? (
           <button
             className="btn-primary"
+            data-testid="continue-button"
             onClick={() => setStep(step + 1)}
             disabled={!canProceed()}
           >
@@ -334,6 +340,7 @@ export default function TripForm({ onSubmit, isLoading }: TripFormProps) {
         ) : (
           <button
             className="btn-primary flex items-center gap-2"
+            data-testid="submit-trip-button"
             onClick={handleSubmit}
             disabled={isLoading}
           >

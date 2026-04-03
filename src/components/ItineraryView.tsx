@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Itinerary, DayPlan, Activity } from '@/types';
+import { Itinerary, DayPlan, LegacyActivity as Activity } from '@/types';
 import {
   formatDate,
   getCategoryEmoji,
@@ -38,7 +38,7 @@ export default function ItineraryView({
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto animate-slide-up">
+    <div className="w-full max-w-4xl mx-auto animate-slide-up" data-testid="itinerary-view">
       {/* Header */}
       <div className="glass-card mb-6 text-center relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-primary-600/10 via-purple-600/10 to-accent-600/10" />
@@ -150,7 +150,7 @@ export default function ItineraryView({
                       {itinerary.days[activeDay].theme}
                     </h3>
                     <p className="text-sm text-gray-400">
-                      {formatDate(itinerary.days[activeDay].date)}
+                      {formatDate(itinerary.days[activeDay].date ?? '')}
                     </p>
                   </div>
                 </div>
@@ -241,7 +241,7 @@ export default function ItineraryView({
             🎒 Packing Essentials
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-            {itinerary.packingList.map((item: string, index: number) => (
+            {(itinerary.packingList ?? []).map((item: string, index: number) => (
               <label
                 key={index}
                 className="flex items-center gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors cursor-pointer group"
@@ -266,7 +266,7 @@ export default function ItineraryView({
             💡 Travel Tips
           </h3>
           <div className="space-y-3">
-            {itinerary.travelTips.map((tip: string, index: number) => (
+            {(itinerary.travelTips ?? []).map((tip: string, index: number) => (
               <div
                 key={index}
                 className="flex items-start gap-3 p-3 rounded-lg glass-subtle"

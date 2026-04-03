@@ -6,7 +6,7 @@ import { NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import { generateWithGemini, parseItineraryJSON } from '@/lib/gemini';
 import { buildItineraryPrompt } from '@/lib/prompts';
-import { GenerateItineraryRequest, Itinerary, Activity, DayPlan } from '@/types';
+import { GenerateItineraryRequest, Itinerary, LegacyActivity as Activity, DayPlan } from '@/types';
 
 export async function POST(request: Request) {
   try {
