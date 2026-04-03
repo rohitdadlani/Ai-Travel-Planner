@@ -1,101 +1,143 @@
-import Image from "next/image";
+'use client';
+
+import React, { useState } from 'react';
+import Navbar from '@/components/Navbar';
+import TripForm from '@/components/TripForm';
+import ItineraryView from '@/components/ItineraryView';
+import LoadingScreen from '@/components/LoadingScreen';
+import { TripPreferences, Itinerary } from '@/types';
+import { saveTrip } from '@/lib/storage';
+
+type AppState = 'form' | 'loading' | 'result';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [appState, setAppState] = useState<AppState>('form');
+  const [itinerary, setItinerary] = useState<Itinerary | null>(null);
+  const [destination, setDestination] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  const handleSubmit = async (preferences: TripPreferences) => {
+    setDestination(preferences.destination);
+    setAppState('loading');
+    setError(null);
+
+    try {
+      const response = await fetch('/api/generate-itinerary', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ preferences }),
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to generate itinerary');
+      }
+
+      setItinerary(data.itinerary);
+      setAppState('result');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong');
+      setAppState('form');
+    }
+  };
+
+  const handleReset = () => {
+    setItinerary(null);
+    setAppState('form');
+    setError(null);
+  };
+
+  const handleSave = () => {
+    if (itinerary) {
+      saveTrip(itinerary, {
+        destination: itinerary.destination,
+        startDate: itinerary.startDate,
+        endDate: itinerary.endDate,
+        budget: itinerary.budget as TripPreferences['budget'],
+        interests: [],
+        travelStyle: 'balanced',
+        travelers: 1,
+      });
+      alert('Trip saved! 🎉');
+    }
+  };
+
+  return (
+    <>
+      <Navbar />
+
+      <main className="min-h-[calc(100vh-4rem)] flex flex-col">
+        {/* Hero section (only visible on form state) */}
+        {appState === 'form' && (
+          <div className="text-center pt-12 pb-8 px-4 animate-fade-in">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 glass-subtle rounded-full text-xs text-gray-400 mb-6">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              AI-Powered Itinerary Planning
+            </div>
+            <h1 className="text-4xl md:text-6xl font-display font-extrabold mb-4">
+              <span className="gradient-text">Forge Your</span>
+              <br />
+              <span className="text-white">Perfect Trip</span>
+            </h1>
+            <p className="text-gray-400 text-lg max-w-xl mx-auto leading-relaxed">
+              Let AI craft a personalized day-by-day itinerary tailored to your
+              interests, budget, and travel style.
+            </p>
+          </div>
+        )}
+
+        {/* Main Content */}
+        <div className="flex-1 px-4 pb-12">
+          {/* Error Banner */}
+          {error && (
+            <div className="max-w-2xl mx-auto mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-sm animate-slide-down">
+              <div className="flex items-center gap-2">
+                <span>⚠️</span>
+                <span>{error}</span>
+                <button
+                  className="ml-auto text-red-400 hover:text-red-200"
+                  onClick={() => setError(null)}
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Form */}
+          {appState === 'form' && (
+            <TripForm
+              onSubmit={handleSubmit}
+              isLoading={false}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          )}
+
+          {/* Loading */}
+          {appState === 'loading' && (
+            <div className="flex items-center justify-center min-h-[60vh]">
+              <LoadingScreen destination={destination} />
+            </div>
+          )}
+
+          {/* Result */}
+          {appState === 'result' && itinerary && (
+            <ItineraryView
+              itinerary={itinerary}
+              onReset={handleReset}
+              onSave={handleSave}
+            />
+          )}
         </div>
+
+        {/* Footer */}
+        <footer className="text-center py-6 border-t border-white/5">
+          <p className="text-xs text-gray-600">
+            Built with 🔥 by TripForge • Powered by Google Gemini &
+            HuggingFace
+          </p>
+        </footer>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+    </>
   );
 }

@@ -33,4 +33,9 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts
+# diagnostic and temporary files
+available_models.json
+models_list.txt
+src/debug-models.ts
+.next/
+*.log
